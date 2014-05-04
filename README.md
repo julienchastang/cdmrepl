@@ -1,14 +1,14 @@
 # cdmrepl
 
-A Clojure library designed to ... well, that part is up to you.
+A REPL into netcdf-java
 
 ## Usage
 
-FIXME
+See examples directory.
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2014 Unidata
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
