@@ -1,4 +1,4 @@
-(ns examples.core
+(ns examples.upperair
   (:import [ucar.nc2.constants FeatureType])
   (:require [cdmrepl.core :as  cr]
             [clojure.java.io :as io] ))
