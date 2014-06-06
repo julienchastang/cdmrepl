@@ -8,4 +8,4 @@
                  [edu.ucar/netcdf "4.3.20"]
                  [edu.ucar/opendap "4.3.20"]
                  [edu.ucar/visadCdm "4.3.20"]]
-  :plugins [[cider/cider-nrepl "0.6.0"]])
+  :plugins [[cider/cider-nrepl "0.7.0-SNAPSHOT"]])
