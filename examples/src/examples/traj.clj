@@ -3,26 +3,24 @@
   (:require [cdmrepl.core :as  cr]
             [clojure.java.io :as io] ))
 
-(def trajectory (cr/open-dataset 
-                (str (io/file 
-                      (io/resource "traj.nc")))
+(def trajectory (cr/open-dataset
+                "https://motherlode.ucar.edu/repository/opendap/fa78457d-bb85-473f-ae54-bccdf49f27bd/entry.das"
                 FeatureType/TRAJECTORY cr/log))
-
-(def pfc (first  (.getPointFeatureCollectionList trajectory)))
 
 (defn get-traj[trajs t]
   (first (filter #(= (.getName %) t) trajs)))
 
+(defn get-traj-names[trajs]
+  (map #(.getName %) trajs))
 
-(def traj (get-traj (cr/ncj-seq pfc) "17"))
+(def traj-names (get-traj-names fc))
+
+(def traj (get-traj fc "11"))
 
 (def all-points (cr/ncj-seq traj))
 
-(defn get-point-int-data[lvl field] 
-  (let [lvl-data (.getData lvl)
-        m (.findMember lvl-data field)]
-    [(.getScalarFloat lvl-data
-                      m) (.getUnitsString m)]))
+(def members (cr/list-members (first all-points)))
 
-(def pressures (map #(get-point-int-data % "mslp") all-points))
-(def z (map #(get-point-int-data % "z") all-points))
+(def times (map #(cr/get-scalar-float-data % "time") all-points))
+
+(def maxrv (map #(cr/get-scalar-float-data % "maxrv") all-points))

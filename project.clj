@@ -5,7 +5,6 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :repositories [["sonatype" "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases"]]
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [edu.ucar/netcdf "4.3.20"]
-                 [edu.ucar/opendap "4.3.20"]
-                 [edu.ucar/visadCdm "4.3.20"]]
-  :plugins [[cider/cider-nrepl "0.7.0-SNAPSHOT"]])
+                 [edu.ucar/netcdf4 "4.5.5"]
+                 [edu.ucar/opendap "4.5.5"]
+                 [edu.ucar/visadCdm "4.5.5"]])

@@ -1,49 +1,41 @@
 (ns examples.upperair
   (:import [ucar.nc2.constants FeatureType])
   (:require [cdmrepl.core :as  cr]
-            [clojure.java.io :as io] ))
+            [clojure.java.io :as io]))
 
 (def upper-air (cr/open-dataset 
                 (str (io/file 
-                      (io/resource "20140110_upa.gem")))
+                      (io/resource "19990503_upa.gem")))
                 FeatureType/STATION_PROFILE cr/log))
 
-(def pfc (first  (.getPointFeatureCollectionList upper-air)))
+(def fc (-> upper-air cr/get-feature-collection cr/get-fc-seq))
 
-(defn get-profile[profs p]
-  (first (filter #(= (.getName %) p) profs)))
+(defn get-profile[fc-seq name]
+  (first (cr/get-feature-by-name fc-seq name)))
 
-(filter #(> (count (cr/ncj-seq %)) 0) (cr/ncj-seq pfc))
+(filter #(> (count (cr/ncj-seq %)) 0) fc)
 
-(map #(.getName %) (filter #(> (count (cr/ncj-seq %)) 0) 
-                           (cr/ncj-seq pfc)))
+(map #(.getName %) (filter #(> (count (cr/ncj-seq %)) 0) fc))
 
-(def profile (get-profile (cr/ncj-seq pfc) "2185"))
-;;(def profile (get-profile (ncj-seq pfc) "72214"))
+(def profile (get-profile fc "SLC"))
 
 (def all-levels (cr/ncj-seq (first (cr/ncj-seq profile))))
 
-(defn get-level-int-data[lvl field] 
-  (let [lvl-data (.getData lvl)
-        m (.findMember lvl-data field)]
-    [(.getScalarFloat lvl-data
-                      m) (.getUnitsString m)]))
-
 (defn get-level-seq-data[lvl uafield field] 
-  (let [lvl-data (.getData lvl)
-        data (.getArraySequence lvl-data
-                                (.findMember lvl-data uafield))
-        m (.findMember data field)
-        d (.extractMemberArray data m)]
-    [(for [i (range (.getSize d))]
-       (.getFloat d i)) (.getUnitsString m)]))
+  (let [lvl-data (.getData lvl)]
+    (when-let [fmb (.findMember lvl-data uafield)]
+      (let [data (.getArraySequence lvl-data fmb)
+            m (.findMember data field)
+            d (.extractMemberArray data m)]
+        [(for [i (range (.getSize d))]
+           (.getFloat d i)) (.getUnitsString m)]))))
 
-(def pressures (map #(get-level-int-data % "PRES") all-levels))
-(def temperatures (map #(get-level-int-data % "TEMP") all-levels))
-(def dewpoints (map #(get-level-int-data % "DWPT") all-levels))
-(def speeds (map #(get-level-int-data % "SPED") all-levels))
-(def dirs (map #(get-level-int-data % "DRCT") all-levels))
-(def heights (map #(get-level-int-data % "HGHT") all-levels))
+(def pressures (map #(cr/get-scalar-float-data % "PRES") all-levels))
+(def temperatures (map #(cr/get-scalar-float-data % "TEMP") all-levels))
+(def dewpoints (map #(cr/get-scalar-float-data % "DWPT") all-levels))
+(def speeds (map #(cr/get-scalar-float-data % "SPED") all-levels))
+(def dirs (map #(cr/get-scalar-float-data % "DRCT") all-levels))
+(def heights (map #(cr/get-scalar-float-data % "HGHT") all-levels))
 
 (def trpa-pressure (get-level-seq-data (first all-levels) 
                                        "TRPA" "PRES"))
