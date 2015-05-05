@@ -13,6 +13,8 @@
 (defn get-traj-names[trajs]
   (map #(.getName %) trajs))
 
+(def fc (-> trajectory cr/get-feature-collection cr/get-fc-seq))
+
 (def traj-names (get-traj-names fc))
 
 (def traj (get-traj fc "11"))
@@ -23,4 +25,4 @@
 
 (def times (map #(cr/get-scalar-float-data % "time") all-points))
 
-(def maxrv (map #(cr/get-scalar-float-data % "maxrv") all-points))
+(def maxrv (map #(cr/get-scalar-double-data % "maxrv") all-points))
