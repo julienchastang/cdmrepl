@@ -55,7 +55,7 @@
 (defn list-members
   "List data members associated with feature"
   [feature] 
-  (let [f-data (.getData feature)]
+  (let [f-data (.getFeatureData feature)]
     [(map str (.getMembers f-data))]))
 
 (defn str-invoke [instance method-str & args]
@@ -67,7 +67,7 @@
 (defn get-scalar-data
   "Get scalar data for a scalar-type, feature and field"
   [scalar-type feature field] 
-  (let [data (.getData feature)
+  (let [data (.getFeatureData feature)
         m (.findMember data field)]
     [(apply str-invoke
             data
