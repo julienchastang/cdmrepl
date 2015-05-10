@@ -36,35 +36,37 @@
 
 ;; some useful idioms derived empirically
 
-(defn get-feature-collection
+(defn feature-collection
   "Get the FeatureCollection from the FeatureDataset. Empirically these seem to
    be of length one so return the first."
   [feature-dataset]
   (first  (.getPointFeatureCollectionList feature-dataset)))
 
-(defn get-fc-seq
+(defn list-vars [feature-dataset]
+  "List vars associated with feature"
+  (map (memfn getName) (.getDataVariables feature-dataset)))
+
+(defn fc-seq
   "Get a netcdf-Java 'sequence' from the feature collection"
-  [feature-collection]
-  (ncj-seq feature-collection))
+  [feature-coll]
+  (ncj-seq feature-coll))
+
+(defn fc-seq-names[fcseq]
+  "Call getName on each item in the feature collection sequence"
+  (map (memfn getName) fcseq))
 
 (defn get-feature-by-name
   "Given a name (identifier), get features from a feature collection sequence"
-  [fc-seq name]
-  (filter #(= (.getName %) name) fc-seq))
+  [fc-sq name]
+  (filter #(= (.getName %) name) fc-sq))
 
 (defn list-members
-  "List data members associated with feature"
+  "List data member names associated with feature"
   [feature] 
   (let [f-data (.getFeatureData feature)]
     [(map str (.getMembers f-data))]))
 
-(defn str-invoke [instance method-str & args]
-  (clojure.lang.Reflector/invokeInstanceMethod 
-   instance 
-   method-str 
-   (to-array args)))
-
-(defn get-scalar-data
+(defn scalar-data
   "Get scalar data for a scalar-type, feature and field"
   [scalar-type feature field] 
   (let [data (.getFeatureData feature)
@@ -75,12 +77,21 @@
             [m])
      (.getUnitsString m)]))
 
-(defn get-scalar-float-data
+(defn scalar-float-data
   "Get scalar double data for a feature and field"
   [feature field] 
-  (get-scalar-data 'Float feature field))
+  (scalar-data 'Float feature field))
 
-(defn get-scalar-double-data
+(defn scalar-double-data
   "Get scalar double data for a feature and field"
   [feature field] 
-  (get-scalar-data 'Double feature field))
+  (scalar-data 'Double feature field))
+
+;; General Utilities
+
+(defn str-invoke [instance method-str & args]
+  "Invoke method-str via reflection"
+  (clojure.lang.Reflector/invokeInstanceMethod 
+   instance 
+   method-str 
+   (to-array args)))

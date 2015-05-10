@@ -3,26 +3,23 @@
   (:require [cdmrepl.core :as  cr]
             [clojure.java.io :as io] ))
 
-(def station (cr/open-dataset 
+(def feature-ds (cr/open-dataset 
                 (str (io/file 
-                      (io/resource "new_dataset2.nc")))
+                      (io/resource "new_dataset4.nc")))
                 FeatureType/STATION cr/log))
 
-(def fc (-> station cr/get-feature-collection cr/get-fc-seq))
+(def fcseq (-> feature-ds cr/feature-collection cr/fc-seq))
 
-(map (memfn getName) fc)
+(def fc-names (cr/fc-seq-names fcseq))
 
-(def f (first fc))
+(def feature (first (cr/get-feature-by-name fcseq "C")))
 
-(def data (cr/get-fc-seq f))
+(def features (cr/ncj-seq feature))
 
-(def data1 (first data))
+(def members (cr/list-members (first features)))
 
-(def b (.getData data1))
+(def var-names (cr/list-vars feature-ds))
 
-(defn list-members [lvl] 
-  (let [lvl-data (.getData lvl)]
-    [(map str (.getMembers lvl-data))]))
+(def times (map #(cr/scalar-float-data % "time") features))
 
-
-
+(def humidity (map #(cr/scalar-float-data % "humidity") features))
